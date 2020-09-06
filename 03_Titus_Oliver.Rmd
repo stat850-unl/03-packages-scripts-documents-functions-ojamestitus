@@ -10,7 +10,7 @@ options(digits = 3)
 ```
 
 ```{r load-sas-libraries, echo = F, message = F, warning = F}
-saspath <- "/usr/local/SASHome/SASFoundation/9.4/bin/sas_en" # Your SAS path goes here
+saspath <- "C:/Program Files/SASHome/SASFoundation/9.4/sas.exe" # Your SAS path goes here
 sasopts <- "-nosplash -ls 75"
 
 # Please leave this in so that I can test it!
@@ -47,31 +47,25 @@ In the R chunk below, write a function which will solve this problem. Do not cha
 Show the results from running your function on the integers 1-20, as well as a sequence of 10 random integers between 0 and 100. (This code is already written for you).
 
 ```{r fizzbuzz-solution, echo = T}
-
 fizzbuzz <- function(x) {
-  # FizzBuzz code goes here
-fizzbuzz <- function(x) {
-  # FizzBuzz code goes here
-  b <- "Buzz"
-  f<- "Fizz"
-  fb <- "FizzBuzz"
+  
+  for(x in x) {
   
   if (x %% 15 == 0) {
-    fb
+    print("FizzBuzz")
   }
   
   else if (x %% 5 == 0){
-    b
+    print("Buzz")
  }
   else if (x %% 3 == 0){
-    f
+    print("Fizz")
   }
   else {
-    x
+    print(x)
   } 
- }
 }
-
+ }
 ```
 
 ```{r test-fizzbuzz}
@@ -81,14 +75,17 @@ fizzbuzz(sample(1:100, 10)) # sample 10 values from 1 to 100
 
 In the sas chunk, write similar code which will solve this problem.
 
-```{sashtml fizzbuzz-sas, error = T}
+```{r fizzbuzz-sas, engine="sashtml", engine.path=saspath, engine.opts=sasopts, error = T}
 proc printto log="saslog.log" new;
+
 proc iml;
-
 start fizzbuzz(x);
-/* FizzBuzz code goes here */
-
-finish;
+  y="";
+    if mod(x,15)=0 then y=y+"FizzBuzz";
+    if mod(x,5)=0 then y=y+"Buzz";
+    if mod(x,3)=0 then y=y+"Fizz";
+    return y;
+  finish;
 
 x1 = repeat(0, 20); /* initialize x1 */
 fb1 = repeat("        ", 20);
@@ -122,18 +119,32 @@ unlink("saslog.log")
 
 ## Exploring Packages and Modules
 
-### R Package: XXXX
-Find an R package which is interesting to you. Fill in the package name above, and describe or demonstrate some feature of the package here. 
+### R Package: ggplot2
+#The package I am demonstrating is ggplot2 which is part of the Tidyverse collection of packages. GGplot2 is useful for creating graphics based visualizations of data. Since I don't have a dataset, I just plotted the standard normal distribution below with mean 0 and standard devition 1. 
 
 ```{r, cache = T}
-
+library(tidyverse)
+ggplot(data.frame(x=c(-4,4)), aes(x=x)) + stat_function(fun=function(x) dnorm(x, mean=0, sd=1))
 ```
+ 
 
 
-### SAS Procedure: PROC TREE
-Look through the [SAS Procedures Guide](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=part-2.htm&docsetVersion=9.4&locale=en) (or [this](https://go.documentation.sas.com/?docsetId=proc&docsetTarget=p0ptdedyvyouspn1erbeqr0floca.htm&docsetVersion=9.4&locale=en) guide to procedures documented elsewhere) and find a procedure that is interesting to you that we haven't yet discussed (which is most of them). Read the documentation of that procedure and demonstrate its use on a data set that is appropriate. Do not just copy the example code - actually explore what the procedure does. If you need code to get a dataset into SAS, check out [Module 4](https://srvanderplas.github.io/unl-stat850/reading-data.html#delimited-text-files), which has several chunks you can likely steal verbatim. There is also some sample ?data in the sashelp library.
+### SAS Procedure: PROC SGPLOT
+
+I'm demonstrating the 'sgpolot' procedure here. I chose this since I used the plotting package in R 'ggplot2' and I wanted to explore what package was similar in SAS. Here, I create a dataset for an F distribution with numerator degrees of freedom of 5 and a denominator degrees of freedom of 2. This disribution is plotted below: 
 
 Fill in your code in the chunk below.
-```{sashtml proc-demo, error = T}
+```{r proc-demo, engine="sashtml", engine.path=saspath, engine.opts=sasopts, error = T}
+proc printto log="saslog.log" new;
 
+data fdist;
+  do x = 0 to 5 by .001;
+    fdist = pdf("F", x, 5, 2);
+    output;
+  end;
+run;
+
+proc sgplot data=fdist;
+  series x = x y = fdist;
+run;
 ```
