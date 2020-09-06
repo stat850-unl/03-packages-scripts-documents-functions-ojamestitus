@@ -1,6 +1,6 @@
 ---
 title: "Homework: Packages, Scripts, Documents, and Functions"
-author: "Firstname Lastname"
+author: "Oliver Titus"
 output: html_document
 ---
 
